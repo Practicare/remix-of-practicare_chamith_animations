@@ -68,85 +68,45 @@ export function AIStockUploadDialog({ onItemsDetected, categories, children }: A
   };
 
   const handleFile = (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      return;
-    }
+    const accepted =
+      file.type.startsWith("image/") ||
+      file.type === "application/pdf" ||
+      /\.(pdf|csv|xlsx?|docx?)$/i.test(file.name);
+    if (!accepted) return;
 
     setSelectedFile(file);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setSelectedImage(e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
+
+    if (file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = (e) => setSelectedImage(e.target?.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setSelectedImage(null);
+    }
   };
 
-  const handleAnalyze = async () => {
+  // Mock extraction result — replace with the real AI response when the backend is wired up.
+  const MOCK_DETECTED_ITEMS: DetectedItem[] = [
+    { name: "Paracetamol 500mg", quantity: 50, category: "drug-cupboard", expiryDate: "2025-06-15", batchNumber: "PAR2024001" },
+    { name: "Ibuprofen 200mg", quantity: 30, category: "drug-cupboard", expiryDate: "2025-11-02", batchNumber: "IBU2024005" },
+    { name: "Bandages (Sterile)", quantity: 20, category: "consumables", expiryDate: "2026-01-20" },
+    { name: "Alcohol Swabs", quantity: 100, category: "consumables", expiryDate: "2027-03-10" },
+    { name: "Influenza Vaccine", quantity: 15, category: "vaccines", expiryDate: "2025-09-30", batchNumber: "FLU2024Q3" },
+    { name: "Nitrile Gloves (Medium)", quantity: 200, category: "consumables" },
+    { name: "Sterile Saline 0.9%", quantity: 40, category: "consumables", expiryDate: "2026-08-14", batchNumber: "SAL2024118" },
+  ];
+
+  const handleAnalyze = () => {
     if (!selectedFile) return;
-
-    setIsAnalyzing(true);
-
-    // Simulate AI analysis delay - this is where you'll connect the backend
-    await new Promise((resolve) => setTimeout(resolve, 2500));
-
-    // Mock detected items - replace with actual AI response
-    const mockDetectedItems: DetectedItem[] = [
-      {
-        name: "Paracetamol 500mg",
-        quantity: 50,
-        category: "drug-cupboard",
-        expiryDate: "2025-06-15",
-        batchNumber: "PAR2024001",
-      },
-      {
-        name: "Ibuprofen 200mg",
-        quantity: 30,
-        category: "drug-cupboard",
-        expiryDate: "2025-11-02",
-        batchNumber: "IBU2024005",
-      },
-      {
-        name: "Bandages (Sterile)",
-        quantity: 20,
-        category: "consumables",
-        expiryDate: "2026-01-20",
-      },
-      {
-        name: "Alcohol Swabs",
-        quantity: 100,
-        category: "consumables",
-        expiryDate: "2027-03-10",
-      },
-      {
-        name: "Influenza Vaccine",
-        quantity: 15,
-        category: "vaccines",
-        expiryDate: "2025-09-30",
-        batchNumber: "FLU2024Q3",
-      },
-    ];
-
-    setIsAnalyzing(false);
-    setAnalysisComplete(true);
-    setDetectedItems(mockDetectedItems);
-
-    // Brief success flash, then open review dialog
-    setTimeout(() => {
-      setOpen(false);
-      setReviewOpen(true);
-    }, 800);
+    setDetectedItems(MOCK_DETECTED_ITEMS);
+    setOpen(false);
+    setScanOpen(true);
   };
 
   const resetState = () => {
     setSelectedImage(null);
     setSelectedFile(null);
-    setIsAnalyzing(false);
-    setAnalysisComplete(false);
     setDragActive(false);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    resetState();
   };
 
   return (
