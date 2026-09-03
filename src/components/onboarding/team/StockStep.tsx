@@ -91,7 +91,7 @@ export function StockStep({ state, update }: Props) {
   const chooseMethod = (method: StockMethod) => {
     if (method === "manual") {
       update({ stockMethod: "manual" });
--      return;
+      return;
     }
     if (method === "csv") {
       fileRef.current?.click();
