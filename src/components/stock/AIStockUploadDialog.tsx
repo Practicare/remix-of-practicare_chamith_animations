@@ -252,6 +252,22 @@ export function AIStockUploadDialog({ onItemsDetected, categories, children }: A
         </div>
       </DialogContent>
     </Dialog>
+
+    <AIDocumentScanDialog
+      open={scanOpen}
+      fileName={selectedFile?.name ?? "Document"}
+      items={detectedItems}
+      onCancel={() => {
+        setScanOpen(false);
+        resetState();
+      }}
+      onComplete={(items) => {
+        setDetectedItems(items);
+        setScanOpen(false);
+        setReviewOpen(true);
+      }}
+    />
+
     <AIStockReviewDialog
       open={reviewOpen}
       onOpenChange={(v) => {
