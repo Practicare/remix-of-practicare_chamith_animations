@@ -140,10 +140,10 @@ export function AIStockUploadDialog({ onItemsDetected, categories, children }: A
         </DialogHeader>
 
         <div className="space-y-4 mt-4">
-          {!selectedImage ? (
+          {!selectedFile ? (
             <div
               className={cn(
-                "relative border-2 border-dashed rounded-xl p-8 transition-all duration-200",
+                "relative border-2 border-dashed rounded-lg p-8 transition-all duration-200",
                 dragActive
                   ? "border-primary bg-primary/5 scale-[1.02]"
                   : "border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/50"
@@ -156,19 +156,19 @@ export function AIStockUploadDialog({ onItemsDetected, categories, children }: A
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/*,application/pdf,.csv,.xls,.xlsx,.doc,.docx"
                 onChange={handleFileInput}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
               <div className="flex flex-col items-center text-center">
-                <div className="p-4 rounded-full bg-muted mb-4">
+                <div className="p-4 rounded-lg bg-muted mb-4">
                   <Upload className="w-8 h-8 text-muted-foreground" />
                 </div>
                 <p className="font-medium text-foreground mb-1">
-                  Drop your image here or click to upload
+                  Drop your document here or click to upload
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Supports JPG, PNG, HEIC up to 20MB
+                  Invoices, delivery dockets or shelf photos — PDF, JPG, PNG, CSV up to 20MB
                 </p>
 
                 <div className="flex items-center gap-4 mt-6">
@@ -195,83 +195,48 @@ export function AIStockUploadDialog({ onItemsDetected, categories, children }: A
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="relative rounded-xl overflow-hidden border border-border">
-                <img
-                  src={selectedImage}
-                  alt="Selected stock"
-                  className="w-full h-64 object-cover"
-                />
-                {!isAnalyzing && !analysisComplete && (
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    className="absolute top-2 right-2"
-                    onClick={() => {
-                      setSelectedImage(null);
-                      setSelectedFile(null);
-                    }}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                )}
-
-                {/* Analysis Overlay */}
-                {isAnalyzing && (
-                  <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex flex-col items-center justify-center">
-                    <div className="relative">
-                      <div className="absolute inset-0 animate-ping">
-                        <Sparkles className="w-12 h-12 text-primary/50" />
-                      </div>
-                      <Sparkles className="w-12 h-12 text-primary animate-pulse" />
+              <div className="relative rounded-lg overflow-hidden border border-border">
+                {selectedImage ? (
+                  <img
+                    src={selectedImage}
+                    alt="Selected stock"
+                    className="w-full h-64 object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-40 bg-muted/40 flex flex-col items-center justify-center gap-2 px-6 text-center">
+                    <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                      <FileText className="w-6 h-6" />
                     </div>
-                    <p className="mt-4 font-medium text-foreground">Analyzing image...</p>
-                    <p className="text-sm text-muted-foreground">Detecting stock items</p>
-                    
-                    {/* Scanning animation lines */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                      <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent animate-[scan_2s_linear_infinite]" 
-                        style={{ 
-                          animation: "scan 2s ease-in-out infinite",
-                          top: "0%"
-                        }} 
-                      />
+                    <div className="text-sm font-medium truncate max-w-full">
+                      {selectedFile.name}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {(selectedFile.size / 1024).toFixed(0)} KB
+                      {isPdf ? " · PDF document" : ""}
                     </div>
                   </div>
                 )}
 
-                {/* Success Overlay */}
-                {analysisComplete && (
-                  <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex flex-col items-center justify-center">
-                    <div className="p-4 rounded-full bg-emerald-100 dark:bg-emerald-900/30 mb-4">
-                      <CheckCircle className="w-12 h-12 text-emerald-600 dark:text-emerald-400" />
-                    </div>
-                    <p className="font-medium text-foreground">Items detected!</p>
-                    <p className="text-sm text-muted-foreground">Adding to inventory...</p>
-                  </div>
-                )}
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="absolute top-2 right-2 rounded-lg"
+                  onClick={resetState}
+                  aria-label="Remove selected file"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
               </div>
 
-              {!isAnalyzing && !analysisComplete && (
-                <div className="flex gap-3">
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    onClick={() => {
-                      setSelectedImage(null);
-                      setSelectedFile(null);
-                    }}
-                  >
-                    Choose Different Image
-                  </Button>
-                  <Button
-                    className="flex-1 gap-2"
-                    onClick={handleAnalyze}
-                  >
-                    <Sparkles className="w-4 h-4" />
-                    Analyze with AI
-                  </Button>
-                </div>
-              )}
+              <div className="flex gap-3">
+                <Button variant="outline" className="flex-1" onClick={resetState}>
+                  Choose Different File
+                </Button>
+                <Button className="flex-1 gap-2" onClick={handleAnalyze}>
+                  <Sparkles className="w-4 h-4" />
+                  Analyze with AI
+                </Button>
+              </div>
             </div>
           )}
 
@@ -279,21 +244,12 @@ export function AIStockUploadDialog({ onItemsDetected, categories, children }: A
           <div className="bg-muted/50 rounded-lg p-4">
             <p className="text-sm font-medium text-foreground mb-2">Tips for best results:</p>
             <ul className="text-xs text-muted-foreground space-y-1">
-              <li>• Ensure good lighting and clear visibility of labels</li>
-              <li>• Include expiry dates and batch numbers in frame</li>
-              <li>• Take photos of one shelf or category at a time</li>
+              <li>• Upload the supplier invoice or delivery docket where possible</li>
+              <li>• Make sure expiry dates and batch numbers are visible</li>
+              <li>• For photos, capture one shelf or category at a time</li>
             </ul>
           </div>
         </div>
-
-        <style>{`
-          @keyframes scan {
-            0%, 100% { top: 0%; opacity: 0; }
-            10% { opacity: 1; }
-            50% { top: 100%; opacity: 1; }
-            60% { opacity: 0; }
-          }
-        `}</style>
       </DialogContent>
     </Dialog>
     <AIStockReviewDialog
