@@ -71,7 +71,7 @@ export const INDUSTRY_DEFAULTS: Record<TeamIndustry, IndustryDefaults> = {
         description: "Log autoclave cycles, load contents and indicator results.",
         frequency: "Each cycle",
       },
-ave    ],
+    ],
     roles: DEFAULT_ROLES,
   },
   Dental: {
