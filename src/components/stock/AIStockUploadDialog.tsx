@@ -8,9 +8,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Upload, Camera, Sparkles, X, Image as ImageIcon, Loader2, CheckCircle } from "lucide-react";
+import { Upload, Camera, Sparkles, X, Image as ImageIcon, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AIStockReviewDialog } from "./AIStockReviewDialog";
+import { AIDocumentScanDialog } from "./AIDocumentScanDialog";
 import { mockStockCategories } from "@/data/mockStock";
 import { StockCategory } from "@/types/stock";
 
