@@ -34,12 +34,12 @@ export function AIStockUploadDialog({ onItemsDetected, categories, children }: A
   const [dragActive, setDragActive] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisComplete, setAnalysisComplete] = useState(false);
+  const [scanOpen, setScanOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [detectedItems, setDetectedItems] = useState<DetectedItem[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const resolvedCategories = categories && categories.length > 0 ? categories : mockStockCategories;
+  const isPdf = selectedFile?.type === "application/pdf";
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
